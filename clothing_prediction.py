@@ -2,6 +2,7 @@ from tensorflow import keras
 import tensorflow as tf 
 import numpy as np
 
+
 # Callback model to cut gradient descent if loss function is sufficiently low
 class CallbackModel(tf.keras.callbacks.Callback):
 	def __init__(self, callback_threshold=0.30, accuracy = 0.85):
@@ -12,8 +13,6 @@ class CallbackModel(tf.keras.callbacks.Callback):
 		if logs.get("acc") > self.accuracy:
 			print("Canceling training data. Loss is sufficiently low")
 			self.model.stop_training = True
-
-
 
 
 # Training Data
@@ -36,26 +35,26 @@ def build_model(train_images, train_labels):
 	model = keras.Sequential()
 	callbacks = CallbackModel()
 
+	#Convolution 1
 	conv_1 = keras.layers.Conv2D(64, (3,3), activation="relu", input_shape=(28,28,1))
 	pool_1 = keras.layers.MaxPooling2D(2,2)
 
+	#Convolution 2
 	conv_2 = keras.layers.Conv2D(64, (3,3), activation="relu")
 	pool_2 = keras.layers.MaxPooling2D(2,2)
 
+	#Softmax for multi-classification (> binary)
 	flattener = keras.layers.Flatten(input_shape=(28,28)) # 28 x 28 pixel images... want to flatten to single vector
 	densor1 = keras.layers.Dense(128, activation= tf.nn.relu) # Hidden layer (use ReLU activation)
 	densor2 = keras.layers.Dense(10, activation=tf.nn.softmax) # 10 classes of clothing, so we want last layer to only have 10 units
 
 	#Model Add Components
-	#Convolution 1
 	model.add(conv_1)
 	model.add(pool_1)
 
-	#Convolution 2
 	model.add(conv_2)
 	model.add(pool_2)
 
-	#Flatten Model / Last Layers... softmax for > binary classification
 	model.add(flattener)
 	model.add(densor1)
 	model.add(densor2)
